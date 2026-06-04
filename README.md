@@ -19,14 +19,3 @@
 *   **Build Tool:** Vite
 *   **Styling:** Custom Modular CSS (`src/css/aegeo.css`)
 *   **Routing & State:** Managed natively via React Hooks (`useState`) inside a dynamic single-page architecture (`src/main.jsx`).
-
----
-
-## 📦 Installation & Local Setup
-
-To get this project running locally on your machine, follow these steps:
-
-1. **Clone the repository:**
-```bash
-   git clone [https://github.com/Panagiotis2929/aegeo_app.git](https://github.com/Panagiotis2929/aegeo_app.git)
-   cd aegeo_app
