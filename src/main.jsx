@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import ReactDOM from "react-dom/client";
 
 // ─── DESIGN TOKENS ─────────────────────────────────────────────────
 const css = `
@@ -202,7 +203,7 @@ const css = `
   }
   .typing-dot {
     display: inline-block; width: 6px; height: 6px;
-    background: var(--ocean); border-radius: 50;
+    background: var(--ocean); border-radius: 50%;
     animation: pulse 1.2s infinite;
   }
   .typing-dot:nth-child(2) { animation-delay: 0.2s; }
@@ -380,7 +381,7 @@ function Hero({ onNavigate }) {
         </div>
         <h1
           className="font-display hero-title stagger-2"
-          style={{ fontSize: "3.8rem", lineHeight: 1.15, marginTop: 24, marginBottom: 20, color: var(--ocean) }}
+          style={{ fontSize: "3.8rem", lineHeight: 1.15, marginTop: 24, marginBottom: 20, color: "var(--ocean)" }}
         >
           Discover Your Perfect<br />
           <span style={{ color: "var(--terra)", fontStyle: "italic" }}>Mediterranean Escape</span>
@@ -418,7 +419,6 @@ function Planner({ onGenerate, isLoading }) {
   const [useCustom, setUseCustom] = useState(false);
 
   const cities = ["Athens", "Thessaloniki", "Heraklion", "Rhodes", "Patras", "Rome", "Barcelona", "Istanbul", "Bucharest"];
-
   const finalDep = useCustom ? customDep : departure;
 
   return (
@@ -434,7 +434,6 @@ function Planner({ onGenerate, isLoading }) {
       </div>
 
       <div className="card stagger-2" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-
         {/* Departure City */}
         <div>
           <label className="form-label">Departure City</label>
@@ -548,6 +547,21 @@ function Planner({ onGenerate, isLoading }) {
   );
 }
 
+// ─── LOADING SCREEN ──────────────────────────────────────────────────
+function LoadingScreen({ departure }) {
+  return (
+    <div style={{ maxWidth: 560, margin: "100px auto", padding: "0 24px", textAlign: "center" }}>
+      <div className="spinner" style={{ marginBottom: 24 }} />
+      <h3 className="font-display" style={{ fontSize: "1.5rem", color: "var(--ocean)" }}>
+        Σχεδιάζουμε το ταξίδι σας από {departure}...
+      </h3>
+      <p style={{ color: "var(--gray)", marginTop: 8, fontSize: "0.9rem" }}>
+        Ο Aegeo AI αναλύει πτήσεις, διαμονή και τοπικά μυστικά για να δημιουργήσει το τέλειο δρομολόγιο.
+      </p>
+    </div>
+  );
+}
+
 // ─── RESULTS ─────────────────────────────────────────────────────────
 function Results({ tripData, plannerParams }) {
   const [messages, setMessages] = useState([
@@ -591,9 +605,6 @@ Use relevant emojis naturally. Cover topics like: weather, local food & tavernas
     }
   };
 
-  const pct = `${(tripData.match_score || 88)}%`;
-  const budgetPct = Math.round(((tripData.budget_used || plannerParams?.budget * 0.85) / plannerParams?.budget) * 100);
-
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "40px 24px 80px" }}>
       {/* Header */}
@@ -627,11 +638,10 @@ Use relevant emojis naturally. Cover topics like: weather, local food & tavernas
 
       {/* Grid */}
       <div className="results-grid" style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 28, alignItems: "start" }}>
-
         {/* Itinerary */}
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           {tripData.days?.map((day, di) => (
-            <div key={day.day} className={`card day-card stagger-${Math.min(di + 2, 5)}`}>
+            <div key={day.day} className="card day-card">
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
                 <div>
                   <div style={{ fontSize: "0.75rem", color: "var(--terra)", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase" }}>
@@ -676,7 +686,7 @@ Use relevant emojis naturally. Cover topics like: weather, local food & tavernas
 
         {/* Chat */}
         <div style={{ position: "sticky", top: 80 }}>
-          <div className="card stagger-2" style={{ padding: 0, overflow: "hidden", height: 560, display: "flex", flexDirection: "column" }}>
+          <div className="card" style={{ padding: 0, overflow: "hidden", height: 560, display: "flex", flexDirection: "column" }}>
             <div style={{ padding: "18px 20px", borderBottom: "1px solid var(--sand)", background: "var(--sky)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <div style={{ width: 38, height: 38, borderRadius: "50%", background: "var(--ocean)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem" }}>
@@ -817,52 +827,57 @@ function Quiz() {
     <div style={{ maxWidth: 600, margin: "0 auto", padding: "60px 24px" }}>
       <div className="card page-enter" style={{ textAlign: "center", padding: 40 }}>
         <div style={{ fontSize: "4rem", marginBottom: 16 }}>{result.emoji}</div>
-        <span className="tag" style={{ marginBottom: 16 }}>🧬 Το Travel DNA σου</span>
-        <h2 className="font-display" style={{ fontSize: "2rem", color: "var(--ocean)", margin: "16px 0 12px" }}>
+        <span className="tag" style={{ marginBottom: 12 }}>YOUR TRAVEL DNA TYPE</span>
+        <h2 className="font-display" style={{ fontSize: "2.4rem", color: "var(--ocean)", marginBottom: 16 }}>
           {result.type}
         </h2>
-        <p style={{ color: "var(--gray)", lineHeight: 1.7, marginBottom: 28 }}>{result.desc}</p>
-        <div style={{ background: "var(--sky)", borderRadius: 14, padding: "20px 24px", marginBottom: 28 }}>
-          <div style={{ fontSize: "0.8rem", color: "var(--gray)", fontWeight: 500, marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-            🏝️ Νησιά για Εσένα
+        <p style={{ color: "var(--gray)", lineHeight: 1.6, marginBottom: 28 }}>
+          {result.desc}
+        </p>
+        <div style={{ background: "var(--sky)", padding: "16px 20px", borderRadius: 12, textAlign: "left" }}>
+          <div style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--ocean)", textTransform: "uppercase", marginBottom: 8, letterSpacing: "0.05em" }}>
+            Recommended Destinations:
           </div>
-          <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-            {result.dests.map(d => <span key={d} className="tag" style={{ fontSize: "0.9rem", padding: "8px 16px" }}>{d}</span>)}
+          <div style={{ display: "flex", gap: 10 }}>
+            {result.dests.map(d => (
+              <span key={d} className="tag" style={{ background: "white", border: "1px solid var(--foam)", fontSize: "0.85rem", padding: "6px 14px" }}>
+                🏝️ {d}
+              </span>
+            ))}
           </div>
         </div>
-        <button className="btn btn-secondary" onClick={() => { setResult(null); setCurrent(0); setScore({ luxury: 0, adventure: 0, relax: 0 }); }}>
-          Ξεκίνα Ξανά 🔄
-        </button>
       </div>
     </div>
   );
 
   const q = QUESTIONS[current];
-  const progress = ((current) / QUESTIONS.length) * 100;
 
   return (
-    <div style={{ maxWidth: 600, margin: "0 auto", padding: "60px 24px" }}>
-      <div className="card" style={{ padding: 36 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-          <span className="tag">🧬 Travel DNA Quiz</span>
-          <span style={{ fontSize: "0.8rem", color: "var(--gray)" }}>{current + 1} / {QUESTIONS.length}</span>
-        </div>
-        <div style={{ height: 5, background: "var(--sand2)", borderRadius: 3, margin: "14px 0 28px", overflow: "hidden" }}>
-          <div style={{ height: "100%", background: "var(--ocean)", borderRadius: 3, width: `${progress}%`, transition: "width 0.4s ease" }} />
-        </div>
-        <h2 className={`font-display ${animating ? "page-exit" : "page-enter"}`} style={{ fontSize: "1.6rem", color: "var(--ocean)", marginBottom: 28, lineHeight: 1.3 }}>
+    <div style={{ maxWidth: 560, margin: "40px auto", padding: "0 24px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <span className="tag">🧬 Quiz · Question {current + 1} of {QUESTIONS.length}</span>
+        <span style={{ fontSize: "0.85rem", color: "var(--gray)" }}>
+          {Math.round(((current) / QUESTIONS.length) * 100)}% Complete
+        </span>
+      </div>
+      <div style={{ width: "100%", height: 4, background: "var(--sand2)", borderRadius: 2, marginBottom: 32, overflow: "hidden" }}>
+        <div style={{ width: `${((current + 1) / QUESTIONS.length) * 100}%`, height: "100%", background: "var(--ocean)", transition: "width 0.3s ease" }} />
+      </div>
+
+      <div className={animating ? "page-exit" : "page-enter"}>
+        <h2 className="font-display" style={{ fontSize: "1.8rem", color: "var(--ocean)", marginBottom: 28, lineHeight: 1.3 }}>
           {q.q}
         </h2>
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {q.opts.map((opt, i) => (
             <button
               key={i}
-              className="btn btn-secondary"
-              style={{ justifyContent: "flex-start", textAlign: "left", width: "100%", padding: "16px 20px", borderRadius: 12, gap: 14, background: "white", border: "1.5px solid var(--sand2)" }}
+              className="card"
+              style={{ display: "flex", alignItems: "center", gap: 16, textLeft: "left", cursor: "pointer", width: "100%", padding: "20px 24px", transition: "transform 0.2s" }}
               onClick={() => handleAnswer(i)}
             >
-              <span style={{ fontSize: "1.4rem" }}>{opt.icon}</span>
-              <span style={{ fontSize: "0.93rem", lineHeight: 1.4 }}>{opt.text}</span>
+              <span style={{ fontSize: "1.8rem" }}>{opt.icon}</span>
+              <span style={{ fontSize: "0.95rem", fontWeight: 500, color: "var(--ink)", textAlign: "left" }}>{opt.text}</span>
             </button>
           ))}
         </div>
@@ -871,46 +886,17 @@ function Quiz() {
   );
 }
 
-// ─── LOADING SCREEN ──────────────────────────────────────────────────
-function LoadingScreen({ departure, destination }) {
-  const steps = ["Αναλύω τον προορισμό...", "Βρίσκω κρυφούς θησαυρούς...", "Υπολογίζω διαδρομές...", "Δημιουργώ το πρόγραμμά σου..."];
-  const [step, setStep] = useState(0);
-
-  useEffect(() => {
-    const t = setInterval(() => setStep(s => (s + 1) % steps.length), 1400);
-    return () => clearInterval(t);
-  }, []);
-
-  return (
-    <div style={{ minHeight: "calc(100vh - 64px)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ textAlign: "center" }}>
-        <div style={{ fontSize: "3rem", marginBottom: 24 }}>🌊</div>
-        <div className="spinner" style={{ marginBottom: 24 }} />
-        <h3 className="font-display" style={{ color: "var(--ocean)", fontSize: "1.5rem", marginBottom: 8 }}>
-          Aegeo AI σε δουλειά
-        </h3>
-        <p style={{ color: "var(--gray)", fontSize: "0.9rem", transition: "opacity 0.3s" }}>{steps[step]}</p>
-        <p style={{ color: "var(--terra)", fontSize: "0.8rem", marginTop: 8 }}>
-          {departure} → 🗺️ Perfect destination
-        </p>
-      </div>
-    </div>
-  );
-}
-
-// ─── ROOT APP ────────────────────────────────────────────────────────
+// ─── MAIN APP COMPONENT ─────────────────────────────────────────────
 export default function App() {
   const [screen, setScreen] = useState("hero");
-  const [prevScreen, setPrevScreen] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [tripData, setTripData] = useState(null);
   const [plannerParams, setPlannerParams] = useState(null);
-  const [error, setError] = useState(null);
 
-  const navigate = useCallback((to) => {
-    setPrevScreen(screen);
-    setScreen(to);
-  }, [screen]);
+  const navigate = (target) => {
+    setScreen(target);
+  };
 
   const handleGenerate = async ({ departure, budget, days }) => {
     setPlannerParams({ departure, budget, days });
@@ -939,19 +925,27 @@ export default function App() {
           {screen === "hero" && <Hero onNavigate={navigate} />}
           {screen === "planner" && (
             <>
-              {error && <div style={{ maxWidth: 560, margin: "20px auto 0", padding: "0 24px" }}>
-                <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, padding: "12px 16px", color: "#dc2626", fontSize: "0.875rem" }}>
-                  ⚠️ {error}
+              {error && (
+                <div style={{ maxWidth: 560, margin: "20px auto 0", padding: "0 24px" }}>
+                  <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, padding: "12px 16px", color: "#dc2626", fontSize: "0.875rem" }}>
+                    ⚠️ {error}
+                  </div>
                 </div>
-              </div>}
+              )}
               <Planner onGenerate={handleGenerate} isLoading={isLoading} />
             </>
           )}
           {screen === "loading" && <LoadingScreen departure={plannerParams?.departure} />}
-          {screen === "quiz" && <Quiz />}
           {screen === "results" && tripData && <Results tripData={tripData} plannerParams={plannerParams} />}
+          {screen === "quiz" && <Quiz />}
         </PageTransition>
       </div>
     </>
   );
+}
+
+// ─── DOM RENDER STEP ────────────────────────────────────────────────
+const rootElement = document.getElementById("root");
+if (rootElement) {
+  ReactDOM.createRoot(rootElement).render(<App />);
 }
