@@ -546,7 +546,7 @@ function Hero({ onNavigate }) {
   );
 }
 
-// ─── PLANNER  ──────────────
+// ─── PLANNER ──────────────
 function Planner({ onGenerate, isLoading }) {
   const [departure, setDeparture] = useState("Athens");
   const [budget, setBudget] = useState(800);
