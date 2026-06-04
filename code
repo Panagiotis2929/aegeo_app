@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aegeo — AI Travel Companion</title>
+  
+  <!-- React & Babel για να τρέχουν όλα σε ένα αρχείο -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* ═══════════════════════════════════════════════════════════
+       AEGEO — Design System (Από το aegeo.css)
+       ═══════════════════════════════════════════════════════════ */
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
+
+    :root {
+      --sand:         #F5EFE0;
+      --sand2:        #EDE4CF;
+      --sand3:        #E3D8C0;
+      --ocean:        #1A4D6E;
+      --ocean2:       #0D2E43;
+      --foam:         #D6EBF2;
+      --sky:          #5BA4CF;
+      --terracotta:   #C96442;
+      --gold:         #D4A843;
+      --white:        #FDFAF4;
+      --ink:          #1C1A17;
+      --gray:         #7A7468;
+      --gray2:        #A09890;
+
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body:    'DM Sans', system-ui, sans-serif;
+      --nav-h: 68px;
+      --radius-md:  12px;
+      --radius-xl:  24px;
+      --radius-full: 9999px;
+      --shadow-md:  0 4px 20px rgba(26,77,110,0.10);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-body); background: var(--sand); color: var(--ink); min-height: 100vh; }
+    
+    /* Background Texture Effect */
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: 0.2;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+    .page-pad { padding-top: calc(var(--nav-h) + 40px); padding-bottom: 64px; }
+    .font-display { font-family: var(--font-display); }
+    .text-ocean { color: var(--ocean); }
+    .text-terra { color: var(--terracotta); }
+    .text-gray { color: var(--gray); }
+
+    .section-tag { display: inline-flex; align-items: center; gap: 8px; padding: 5px 14px; border-radius: var(--radius-full); font-size: 0.72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; background: var(--foam); color: var(--ocean); }
+    
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 32px; border-radius: var(--radius-full); font-family: var(--font-body); font-size: 0.95rem; font-weight: 600; cursor: pointer; border: none; transition: all .2s; white-space: nowrap; }
+    .btn-primary { background: var(--ocean); color: var(--white); box-shadow: 0 6px 24px rgba(26,77,110,0.28); }
+    .btn-primary:hover { background: var(--ocean2); transform: translateY(-2px); }
+    .btn-secondary { background: transparent; color: var(--ocean); border: 2px solid var(--ocean); }
+    .btn-secondary:hover { background: var(--sand2); }
+
+    .card { background: var(--white); border-radius: var(--radius-xl); box-shadow: var(--shadow-md); overflow: hidden; padding: 30px; }
+    .form-label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--ocean); margin-bottom: 8px; }
+    .form-input { width: 100%; padding: 13px 18px; border-radius: var(--radius-md); border: 1.5px solid var(--sand2); background: var(--sand); font-family: var(--font-body); font-size: 0.95rem; outline: none; }
+    .form-input:focus { border-color: var(--ocean); }
+
+    input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; background: var(--sand2); border-radius: 3px; outline: none; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--ocean); cursor: pointer; }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-up { animation: fadeUp .5s ease forwards; }
+  </style>
+</head>
+<body>
+
+  <div id="root"></div>
+
+  <!-- Εδώ ξεκινάει η λογική της εφαρμογής σε React -->
+  <script type="text/babel">
+
+    // ─── MOCK DATA FALLBACKS (Από useTrip.ts & useChat.ts) ───────────────────
+    const mockTripData = {
+      destination: 'Lisbon',
+      country: 'Portugal',
+      tagline: 'Sun-drenched tiles, fado echoes, and Atlantic soul',
+      match_score: 93,
+      days: [
+        {
+          day: 1,
+          title: 'Arrival & Alfama Discovery',
+          summary: 'Settle in, explore the ancient Moorish quarter, catch a golden sunset',
+          activities: [
+            { time: '14:00', icon: '✈️', name: 'Arrival & Check-in', description: 'Arrive at Humberto Delgado Airport. Take the Metro to Alfama.', cost: 2 },
+            { time: '16:30', icon: '🏰', name: 'São Jorge Castle', description: "Lisbon's iconic hilltop fortress with sweeping views over terracotta rooftops.", cost: 10 },
+            { time: '20:30', icon: '🎵', name: 'Live Fado at Tasca do Chico', description: 'A tiny atmospheric fado house where locals still outnumber tourists.', cost: 25 },
+          ],
+        },
+        {
+          day: 2,
+          title: 'Belém & Maritime History',
+          summary: 'Follow the Age of Discovery along the waterfront',
+          activities: [
+            { time: '09:00', icon: '🥐', name: 'Pastéis de Belém', description: 'The original custard tart bakery since 1837. Order them hot with cinnamon.', cost: 3 },
+            { time: '10:30', icon: '🗺️', name: 'Jerónimos Monastery', description: 'UNESCO Manueline masterpiece — the cloister is extraordinary.', cost: 10 },
+          ],
+        }
+      ]
+    };
+
+    function getMockReply(msg) {
+      const m = msg.toLowerCase();
+      if (m.includes('weather')) return "Lisbon has beautiful weather in spring/summer — pack a light layer for evenings! ☀️";
+      if (m.includes('food') || m.includes('eat')) return "For local food, I recommend finding side-street spots in Alfama — that's where the locals go! 🍽️";
+      return "Great question about your trip! I'd love to help you make it even better. What else can I check? 🌊";
+    }
+
+    // ─── NAV COMPONENT (Από Nav.tsx) ────────────────────────────────────────
+    const Nav = ({ onNavigate, current }) => {
+      return (
+        <nav style={{
+          position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '0 40px', height: 'var(--nav-h)', background: 'rgba(245,239,224,0.88)',
+          backdropFilter: 'blur(14px)', borderBottom: '1px solid rgba(26,77,110,0.08)'
+        }}>
+          <button onClick={() => onNavigate('hero')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 700, color: 'var(--ocean)' }}>
+            Aeg<span style={{ fontStyle: 'italic', color: 'var(--terracotta)' }}>eo</span>
+          </button>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <button className="btn" style={{ padding: '8px 18px', fontSize: '0.85rem', background: current === 'quiz' ? 'var(--ocean)' : 'transparent', color: current === 'quiz' ? 'white' : 'var(--ocean)', border: '1.5px solid var(--ocean)' }} onClick={() => onNavigate('quiz')}>Travel DNA</button>
+            <button className="btn btn-primary" style={{ padding: '8px 18px', fontSize: '0.85rem' }} onClick={() => onNavigate('planner')}>Plan a Trip</button>
+          </div>
+        </nav>
+      );
+    };
+
+    // ─── HERO SCREEN ────────────────────────────────────────────────────────
+    const Hero = ({ onNavigate }) => (
+      <div className="container page-pad animate-fade-up" style={{ textAlign: 'center', marginTop: '60px' }}>
+        <span className="section-tag">Welcome to Aegeo</span>
+        <h1 className="font-display text-ocean" style={{ fontSize: '3.2rem', margin: '20px 0', lineHeight: '1.2' }}>Discover the Travel DNA of the Aegean & Beyond</h1>
+        <p className="text-gray" style={{ maxWidth: '600px', margin: '0 auto 40px auto', fontSize: '1.1rem' }}>An AI-powered travel companion that crafts perfect, realistic itineraries tailored exactly to your vibe and budget.</p>
+        <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
+          <button className="btn btn-primary" onClick={() => onNavigate('quiz')}>Take the Quiz 🧬</button>
+          <button className="btn btn-secondary" onClick={() => onNavigate('planner')}>Plan a Trip 🗺️</button>
+        </div>
+      </div>
+    );
+
+    // ─── PLANNER SCREEN ─────────────────────────────────────────────────────
+    const Planner = ({ onGenerate, isLoading }) => {
+      const [departure, setDeparture] = React.useState('Athens');
+      const [budget, setBudget] = React.useState(600);
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        onGenerate();
+      };
+
+      return (
+        <div className="container page-pad">
+          <div className="card" style={{ maxWidth: '500px', margin: '0 auto' }}>
+            <h2 className="font-display text-ocean" style={{ marginBottom: '20px' }}>Plan Your Itinerary</h2>
+            <form onSubmit={handleSubmit}>
+              <div style={{ marginBottom: '15px' }}>
+                <label className="form-label">Departure City</label>
+                <input className="form-input" value={departure} onChange={e => setDeparture(e.target.value)} />
+              </div>
+              <div style={{ marginBottom: '25px' }}>
+                <label className="form-label">Budget (€): {budget}</label>
+                <input type="range" min="200" max="3000" step="50" value={budget} onChange={e => setBudget(Number(e.target.value))} />
+              </div>
+              <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={isLoading}>
+                {isLoading ? 'Generating with Aegeo AI...' : 'Generate Trip 🌊'}
+              </button>
+            </form>
+          </div>
+        </div>
+      );
+    };
+
+    // ─── RESULTS SCREEN (Itinerary + Chat) ──────────────────────────────────
+    const Results = ({ tripData }) => {
+      const [messages, setMessages] = React.useState([
+        { role: 'assistant', content: `Hi! I'm your Aegeo companion for ${tripData.destination}! 🌊 Ask me about weather, food, or changes.` }
+      ]);
+      const [input, setInput] = React.useState('');
+
+      const handleSend = (e) => {
+        e.preventDefault();
+        if (!input.trim()) return;
+
+        const userMsg = { role: 'user', content: input };
+        setMessages(prev => [...prev, userMsg]);
+        setInput('');
+
+        setTimeout(() => {
+          const reply = getMockReply(input);
+          setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+        }, 1000);
+      };
+
+      return (
+        <div className="container page-pad" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '30px' }}>
+          <div>
+            <span className="section-tag">✨ Match Score: {tripData.match_score}%</span>
+            <h1 className="font-display text-ocean" style={{ fontSize: '2.5rem', margin: '10px 0' }}>{tripData.destination}, {tripData.country}</h1>
+            <p className="text-terra" style={{ fontStyle: 'italic', marginBottom: '30px' }}>"{tripData.tagline}"</p>
+            
+            {tripData.days.map(day => (
+              <div key={day.day} className="card" style={{ marginBottom: '20px', padding: '20px' }}>
+                <h3 className="text-ocean" style={{ marginBottom: '5px' }}>Day {day.day}: {day.title}</h3>
+                <p className="text-gray" style={{ fontSize: '0.9rem', marginBottom: '15px' }}>{day.summary}</p>
+                {day.activities.map((act, i) => (
+                  <div key={i} style={{ display: 'flex', gap: '15px', margin: '12px 0', paddingLeft: '10px', borderLeft: '2px solid var(--foam)' }}>
+                    <span style={{ fontSize: '1.2rem' }}>{act.icon}</span>
+                    <div>
+                      <strong>{act.time} - {act.name}</strong>
+                      <p style={{ fontSize: '0.85rem', color: '#555' }}>{act.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <div className="card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', height: '500px', position: 'sticky', top: '90px' }}>
+              <h3 className="text-ocean" style={{ marginBottom: '15px' }}>Chat with Aegeo 🌊</h3>
+              <div style={{ flex: 1, overflowY: 'auto', marginBottom: '15px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {messages.map((m, i) => (
+                  <div key={i} style={{ 
+                    alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start', 
+                    background: m.role === 'user' ? 'var(--ocean)' : 'var(--sand2)', 
+                    color: m.role === 'user' ? 'white' : 'var(--ink)', 
+                    padding: '10px 14px', borderRadius: '14px', maxWidth: '85%', fontSize: '0.9rem' 
+                  }}>
+                    {m.content}
+                  </div>
+                ))}
+              </div>
+              <form onSubmit={handleSend} style={{ display: 'flex', gap: '10px' }}>
+                <input className="form-input" value={input} onChange={e => setInput(e.target.value)} placeholder="Type 'weather' or 'food'..." style={{ padding: '10px' }} />
+                <button type="submit" className="btn btn-primary" style={{ padding: '10px 20px' }}>Send</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // ─── QUIZ SCREEN PLACEHOLDER ────────────────────────────────────────────
+// ─── QUIZ COMPONENT (Αντικατάσταση του Placeholder) ──────────────────────
+    const Quiz = () => {
+      // 1. Οι ερωτήσεις του Quiz βασισμένες στο QuizQuestion type
+      const questions = [
+        {
+          q: "Ποιο είναι το ιδανικό σου πρωινό στο νησί;",
+          opts: [
+            { icon: "☕", text: "Καφές με θέα την καλντέρα σε απόλυτη ηρεμία" },
+            { icon: "🏄", text: "Ένα γρήγορο smoothie πριν πάρω τη σανίδα για σερφ" },
+            { icon: "🥞", text: "Παραδοσιακή τυρόπιτα σε ένα καφενείο που παίζει ρεμπέτικα" }
+          ]
+        },
+        {
+          q: "Πώς φαντάζεσαι το τέλειο απόγευμα;",
+          opts: [
+            { icon: "🍷", text: "Wine tasting σε ένα πολυτελές οινοποιείο" },
+            { icon: "🥾", text: "Πεζοπορία σε ένα άγριο, ανεξερεύνητο μονοπάτι" },
+            { icon: "💃", text: "Χορό σε ένα πανηγύρι μέχρι το επόμενο πρωί" }
+          ]
+        },
+        {
+          q: "Τι δεν αποχωρίζεσαι ποτέ στις διακοπές σου;",
+          opts: [
+            { icon: "🕶️", text: "Τα καλά μου γυαλιά ηλίου και stylish ρούχα" },
+            { icon: "🎒", text: "Το σακίδιο πλάτης και τα αθλητικά μου παπούτσια" },
+            { icon: "🃏", text: "Μια τράπουλα, καλή παρέα και μηδενικό άγχος" }
+          ]
+        }
+      ];
+
+      // 2. State για τη διαχείριση του Quiz
+      const [currentQuestion, setCurrentQuestion] = React.useState(0);
+      const [score, setScore] = React.useState({ luxury: 0, adventure: 0, relax: 0 });
+      const [result, setResult] = React.useState(null);
+
+      // 3. Λειτουργία όταν ο χρήστης επιλέγει μια απάντηση
+      const handleAnswer = (index) => {
+        const nextScore = { ...score };
+        if (index === 0) nextScore.luxury += 1;
+        if (index === 1) nextScore.adventure += 1;
+        if (index === 2) nextScore.relax += 1;
+        
+        setScore(nextScore);
+
+        if (currentQuestion < questions.length - 1) {
+          setCurrentQuestion(currentQuestion + 1);
+        } else {
+          // Υπολογισμός τελικού Travel DNA Result
+          let finalType = "";
+          let emoji = "🧬";
+          let desc = "";
+          let dests = [];
+
+          if (nextScore.luxury >= nextScore.adventure && nextScore.luxury >= nextScore.relax) {
+            finalType = "The Jetsetter";
+            emoji = "✨";
+            desc = "Σου αρέσει η κομψότητα, η κυκλαδίτικη αρχιτεκτονική, τα εκπληκτικά ηλιοβασιλέματα και οι high-end εμπειρίες.";
+            dests = ["Σαντορίνη", "Μύκονος"];
+          } else if (nextScore.adventure >= nextScore.luxury && nextScore.adventure >= nextScore.relax) {
+            finalType = "The Explorer";
+            emoji = "🥾";
+            desc = "Αναζητάς τη δράση, τις κρυφές παραλίες, τα θαλάσσια σπορ και το άγριο φυσικό τοπίο.";
+            dests = ["Νάξος", "Κάρπαθος"];
+          } else {
+            finalType = "The Slow-Traveler";
+            emoji = "🌊";
+            desc = "Για σένα διακοπές σημαίνει απόλυτη χαλάρωση, καλό φαγητό, ατελείωτες ώρες στην αμμουδιά και αυθεντική νησιώτικη ζωή.";
+            dests = ["Ικαρία", "Αμοργός"];
+          }
+
+          setResult({ type: finalType, emoji, description: desc, destinations: dests });
+        }
+      };
+
+      const resetQuiz = () => {
+        setCurrentQuestion(0);
+        setScore({ luxury: 0, adventure: 0, relax: 0 });
+        setResult(null);
+      };
+
+      // 4. Εμφάνιση Αποτελέσματος
+      if (result) {
+        return (
+          <div className="container page-pad animate-fade-up">
+            <div className="card" style={{ textAlign: 'center', maxWidth: '600px', margin: '40px auto' }}>
+              <span style={{ fontSize: '3.5rem' }}>{result.emoji}</span>
+              <h2 className="font-display text-ocean" style={{ margin: '15px 0' }}>Το Travel DNA σου: {result.type}</h2>
+              <p className="text-gray" style={{ marginBottom: '25px' }}>{result.description}</p>
+              
+              <div style={{ background: 'var(--sand)', padding: '20px', borderRadius: 'var(--radius-md)', marginBottom: '25px' }}>
+                <h4 style={{ color: 'var(--ocean)', marginBottom: '10px' }}>🏝️ Προτεινόμενα Νησιά για Εσένα:</h4>
+                <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
+                  {result.destinations.map((d, i) => (
+                    <span key={i} className="section-tag" style={{ fontSize: '1rem', padding: '8px 16px' }}>{d}</span>
+                  ))}
+                </div>
+              </div>
+
+              <button className="btn btn-secondary" onClick={resetQuiz}>Ξεκίνα Ξανά 🔄</button>
+            </div>
+          </div>
+        );
+      }
+
+      // 5. Εμφάνιση Ερωτήσεων
+      return (
+        <div className="container page-pad animate-fade-up">
+          <div className="card" style={{ maxWidth: '600px', margin: '40px auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--gray)', fontSize: '0.85rem', marginBottom: '15px' }}>
+              <span>🧬 Travel DNA Quiz</span>
+              <span>Ερώτηση {currentQuestion + 1} από {questions.length}</span>
+            </div>
+            
+            <div style={{ background: 'var(--sand2)', height: '6px', borderRadius: '3px', marginBottom: '30px', overflow: 'hidden' }}>
+              <div style={{ background: 'var(--ocean)', height: '100%', width: `${((currentQuestion + 1) / questions.length) * 100}%`, transition: 'width 0.3s' }}></div>
+            </div>
+
+            <h2 className="font-display text-ocean" style={{ marginBottom: '25px', fontSize: '1.6rem' }}>
+              {questions[currentQuestion].q}
+            </h2>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              {questions[currentQuestion].opts.map((opt, index) => (
+                <button 
+                  key={index} 
+                  className="btn btn-secondary" 
+                  style={{ justifyContent: 'flex-start', textAlign: 'left', width: '100%', padding: '16px 24px', borderRadius: 'var(--radius-md)', background: 'var(--white)' }}
+                  onClick={() => handleAnswer(index)}
+                >
+                  <span style={{ fontSize: '1.3rem', marginRight: '10px' }}>{opt.icon}</span>
+                  {opt.text}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    };
+    // ─── MAIN APP ROUTER ────────────────────────────────────────────────────
+    function App() {
+      const [screen, setScreen] = React.useState('hero');
+      const [isLoading, setIsLoading] = React.useState(false);
+      const [data, setData] = React.useState(null);
+
+      const handleGenerate = () => {
+        setIsLoading(true);
+        setTimeout(() => {
+          setIsLoading(false);
+          setData(mockTripData);
+          setScreen('results');
+        }, 1500); // 1.5 δευτερόλεπτα εφέ loading
+      };
+
+      return (
+        <div>
+          <Nav onNavigate={setScreen} current={screen} />
+          {screen === 'hero' && <Hero onNavigate={setScreen} />}
+          {screen === 'planner' && <Planner onGenerate={handleGenerate} isLoading={isLoading} />}
+          {screen === 'quiz' && <Quiz />}
+          {screen === 'results' && data && <Results tripData={data} />}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
