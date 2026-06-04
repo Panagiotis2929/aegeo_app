@@ -546,17 +546,16 @@ function Hero({ onNavigate }) {
   );
 }
 
-// ─── PLANNER ─────────────────────────────────────────────────────────
+// ─── PLANNER (Αλλαγμένο: Αφαιρέθηκαν τα κουμπιά Duration) ──────────────
 function Planner({ onGenerate, isLoading }) {
   const [departure, setDeparture] = useState("Athens");
   const [budget, setBudget] = useState(800);
-  const [days, setDays] = useState(3);
   const [customDep, setCustomDep] = useState("");
   const [useCustom, setUseCustom] = useState(false);
 
   const cities = ["Athens", "Thessaloniki", "Heraklion", "Rhodes", "Patras", "Rome", "Barcelona", "Istanbul", "Bucharest"];
-
   const finalDep = useCustom ? customDep : departure;
+  const days = 3; // Σταθερή τιμή
 
   return (
     <div style={{ maxWidth: 560, margin: "0 auto", padding: "60px 24px" }}>
@@ -571,7 +570,7 @@ function Planner({ onGenerate, isLoading }) {
       </div>
 
       <div className="card stagger-2" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-
+        
         {/* Departure City */}
         <div>
           <label className="form-label">Departure City</label>
@@ -603,9 +602,6 @@ function Planner({ onGenerate, isLoading }) {
               autoFocus
             />
           )}
-          <p style={{ fontSize: "0.8rem", color: "var(--terra)", marginTop: 6 }}>
-            📍 Departing from: <strong>{finalDep || "—"}</strong>
-          </p>
         </div>
 
         {/* Budget */}
@@ -621,38 +617,6 @@ function Planner({ onGenerate, isLoading }) {
             value={budget}
             onChange={e => setBudget(Number(e.target.value))}
           />
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", color: "var(--gray)", marginTop: 4 }}>
-            <span>€200 Budget</span><span>€4,000 Luxury</span>
-          </div>
-          <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
-            {[400, 800, 1500, 2500].map(v => (
-              <button
-                key={v}
-                className={`btn ${budget === v ? "btn-primary" : "btn-ghost"}`}
-                style={{ padding: "5px 12px", fontSize: "0.78rem" }}
-                onClick={() => setBudget(v)}
-              >
-                €{v}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Days */}
-        <div>
-          <label className="form-label">Duration</label>
-          <div style={{ display: "flex", gap: 8 }}>
-            {[2, 3, 4, 5, 7].map(d => (
-              <button
-                key={d}
-                className={`btn ${days === d ? "btn-primary" : "btn-ghost"}`}
-                style={{ padding: "8px 16px", fontSize: "0.85rem", flex: 1 }}
-                onClick={() => setDays(d)}
-              >
-                {d}d
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* Summary */}
@@ -662,8 +626,8 @@ function Planner({ onGenerate, isLoading }) {
             <div style={{ fontWeight: 600, color: "var(--ocean)" }}>{finalDep || "—"} → Anywhere ✨</div>
           </div>
           <div style={{ textAlign: "right" }}>
-            <div style={{ fontSize: "0.8rem", color: "var(--gray)" }}>Budget / Days</div>
-            <div style={{ fontWeight: 600, color: "var(--ocean)" }}>€{budget} · {days} days</div>
+            <div style={{ fontSize: "0.8rem", color: "var(--gray)" }}>Budget / Duration</div>
+            <div style={{ fontWeight: 600, color: "var(--ocean)" }}>€{budget} · 3 days</div>
           </div>
         </div>
 
