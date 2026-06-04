@@ -1,39 +1,37 @@
-# 🌍 Aegeo | AI Travel Planner
+# 🌊 Aegeo — AI Travel Companion (Free Edition)
 
-**Aegeo** is an intelligent, budget-first travel planning application. Unlike traditional travel tools that require you to pick a destination first, Aegeo starts with your constraints (budget, time, preferences) and utilizes AI to engineer the perfect trip.
+Το **Aegeo** είναι ένας έξυπνος ταξιδιωτικός οδηγός που βοηθάει τον χρήστη να ανακαλύψει το "Travel DNA" του μέσα από ένα διαδραστικό quiz και να οργανώσει το ιδανικό πρόγραμμα διακοπών με βάση το budget του. 
 
----
-
-## 🚀 Key Features
-
-* **Budget-First Engineering:** Input your budget and let the AI propose destinations and calculate estimated breakdowns (flights, hotels, activities).
-* **AI Travel DNA:** A smart onboarding quiz that builds your personalized travel profile.
-* **Dynamic Itineraries:** Fully detailed daily schedules generated via structured AI outputs.
-* **Interactive AI Chat Agent:** Change of plans or bad weather? Chat with Aegeo to dynamically rearrange your itinerary on the fly.
-
-## 🛠️ Tech Stack
-
-**Frontend:**
-* React (TypeScript)
-* Vite
-* Tailwind CSS
-
-**Backend:**
-* FastAPI (Python)
-* Pydantic (Structured AI Outputs)
-
-**Database & Auth:**
-* PostgreSQL (Supabase)
-
-**AI & APIs:**
-* OpenAI API
+Αυτή η έκδοση (**Free Edition**) είναι βασισμένη σε **React + Vite** και χρησιμοποιεί δομημένα Mock Data για την επίδειξη (demo) της ροής και του UI/UX της εφαρμογής.
 
 ---
 
-## 📂 Project Structure
+## ✨ Χαρακτηριστικά (Features)
+
+* 🧬 **Travel DNA Quiz:** Ένα σύντομο quiz 3 ερωτήσεων που αναλύει το στυλ του ταξιδιώτη (*The Jetsetter*, *The Explorer*, *The Slow-Traveler*) και προτείνει τα ανάλογα ελληνικά νησιά.
+* 🗺️ **Trip Planner:** Φόρμα εισαγωγής πόλης αναχώρησης και διαδραστικό slider για τον καθορισμό του budget.
+* 📅 **Itinerary Generator (Demo):** Δημιουργία προσαρμοσμένου ημερήσιου προγράμματος με δραστηριότητες, ώρες και ενδεικτικό κόστος.
+* 💬 **Aegeo Chatbot:** Ένα εικονικό chat room όπου ο χρήστης μπορεί να ζητήσει πληροφορίες (π.χ. για τον καιρό ή το φαγητό) και να λάβει απαντήσεις σε πραγματικό χρόνο.
+
+---
+
+## 📁 Δομή Φακέλων (Project Structure)
+
+Η εφαρμογή έχει σπάσει σε modular αρχεία για μέγιστη ταχύτητα και εύκολη συντήρηση:
 
 ```text
-aegeo/
-├── backend/     # FastAPI application (Routing, AI logic, DB models)
-├── frontend/    # React SPA (UI components, Context, API hooks)
-└── README.md    # Project documentation
+aegeo-app/
+├── index.html          # Κεντρικό αρχείο HTML
+├── src/
+│   ├── components/     # Επαναχρησιμοποιήσιμα στοιχεία UI
+│   │   └── Nav.jsx     # Μπάρα πλοήγησης
+│   ├── screens/        # Οι βασικές οθόνες της εφαρμογής
+│   │   ├── Hero.jsx    # Αρχική σελίδα υποδοχής
+│   │   ├── Planner.jsx # Φόρμα σχεδιασμού ταξιδιού
+│   │   ├── Quiz.jsx    # Το Travel DNA Quiz
+│   │   └── Results.jsx # Εμφάνιση προγράμματος & Chat
+│   ├── styles/
+│   │   └── main.css    # Το Aegean-inspired Design System (CSS)
+│   ├── App.jsx         # Ο κεντρικός Router και διαχειριστής του State
+│   └── main.jsx        # Το entry point της React
+└── package.json        # Ρυθμίσεις και dependencies του Node/Vite
