@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aegeo — AI Travel Companion</title>
   
-  <!-- React & Babel για να τρέχουν όλα σε ένα αρχείο -->
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
     /* ═══════════════════════════════════════════════════════════
-       AEGEO — Design System (Από το aegeo.css)
+       AEGEO — Design System
        ═══════════════════════════════════════════════════════════ */
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
 
@@ -43,7 +42,6 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: var(--font-body); background: var(--sand); color: var(--ink); min-height: 100vh; }
     
-    /* Background Texture Effect */
     body::before {
       content: ''; position: fixed; inset: 0;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
@@ -81,10 +79,9 @@
 
   <div id="root"></div>
 
-  <!-- Εδώ ξεκινάει η λογική της εφαρμογής σε React -->
   <script type="text/babel">
 
-    // ─── MOCK DATA FALLBACKS (Από useTrip.ts & useChat.ts) ───────────────────
+    // ─── MOCK DATA FALLBACKS ───────────────────
     const mockTripData = {
       destination: 'Lisbon',
       country: 'Portugal',
@@ -120,7 +117,7 @@
       return "Great question about your trip! I'd love to help you make it even better. What else can I check? 🌊";
     }
 
-    // ─── NAV COMPONENT (Από Nav.tsx) ────────────────────────────────────────
+    // ─── NAV COMPONENT ────────────────────────────────────────
     const Nav = ({ onNavigate, current }) => {
       return (
         <nav style={{
@@ -185,7 +182,7 @@
       );
     };
 
-    // ─── RESULTS SCREEN (Itinerary + Chat) ──────────────────────────────────
+    // ─── RESULTS SCREEN ──────────────────────────────────
     const Results = ({ tripData }) => {
       const [messages, setMessages] = React.useState([
         { role: 'assistant', content: `Hi! I'm your Aegeo companion for ${tripData.destination}! 🌊 Ask me about weather, food, or changes.` }
@@ -255,10 +252,8 @@
       );
     };
 
-    // ─── QUIZ SCREEN PLACEHOLDER ────────────────────────────────────────────
-// ─── QUIZ COMPONENT (Αντικατάσταση του Placeholder) ──────────────────────
+    // ─── QUIZ COMPONENT ──────────────────────
     const Quiz = () => {
-      // 1. Οι ερωτήσεις του Quiz βασισμένες στο QuizQuestion type
       const questions = [
         {
           q: "Ποιο είναι το ιδανικό σου πρωινό στο νησί;",
@@ -286,13 +281,12 @@
         }
       ];
 
-      // 2. State για τη διαχείριση του Quiz
       const [currentQuestion, setCurrentQuestion] = React.useState(0);
       const [score, setScore] = React.useState({ luxury: 0, adventure: 0, relax: 0 });
       const [result, setResult] = React.useState(null);
 
-      // 3. Λειτουργία όταν ο χρήστης επιλέγει μια απάντηση
       const handleAnswer = (index) => {
+        // Υπολογισμός σκορ επί τόπου για να αποφευχθεί το async καθυστέρησης της React
         const nextScore = { ...score };
         if (index === 0) nextScore.luxury += 1;
         if (index === 1) nextScore.adventure += 1;
@@ -303,7 +297,6 @@
         if (currentQuestion < questions.length - 1) {
           setCurrentQuestion(currentQuestion + 1);
         } else {
-          // Υπολογισμός τελικού Travel DNA Result
           let finalType = "";
           let emoji = "🧬";
           let desc = "";
@@ -336,7 +329,6 @@
         setResult(null);
       };
 
-      // 4. Εμφάνιση Αποτελέσματος
       if (result) {
         return (
           <div className="container page-pad animate-fade-up">
@@ -360,7 +352,6 @@
         );
       }
 
-      // 5. Εμφάνιση Ερωτήσεων
       return (
         <div className="container page-pad animate-fade-up">
           <div className="card" style={{ maxWidth: '600px', margin: '40px auto' }}>
@@ -394,6 +385,7 @@
         </div>
       );
     };
+
     // ─── MAIN APP ROUTER ────────────────────────────────────────────────────
     function App() {
       const [screen, setScreen] = React.useState('hero');
@@ -406,7 +398,7 @@
           setIsLoading(false);
           setData(mockTripData);
           setScreen('results');
-        }, 1500); // 1.5 δευτερόλεπτα εφέ loading
+        }, 1500);
       };
 
       return (
