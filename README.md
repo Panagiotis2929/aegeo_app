@@ -4,7 +4,7 @@
 
 ## 🚀 Live Demo
 Μπορείτε να δείτε την εφαρμογή ζωντανά εδώ:
-👉 **[https://aegeo-app.vercel.app](https://aegeo-app.vercel.app)**
+👉 **[https://aegeo-app.vercel.app](https://y-rpkyranas-7601s-projects.vercel.app/)**
 
 ## 💡 Χαρακτηριστικά
 * **Hyper-personalised itineraries:** Σχεδιασμός ταξιδιού με βάση την πόλη αναχώρησης, το budget και το "vibe" των διακοπών σας.
