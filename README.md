@@ -73,20 +73,23 @@ https://aegeo-app.vercel.app
 src/
 ├── components/
 │   ├── common/
-│   ├── quiz/
-│   ├── itinerary/
-│   └── ui/
-│
-├── pages/
-│
-├── hooks/
-│
-├── services/
-│   └── ai/
-│
-├── styles/
-│
-├── assets/
-│
 ├── App.jsx
 └── main.jsx
+```
+---
+
+## Project Status
+
+Aegeo App is currently a **demo / MVP version** created to showcase the concept of an AI-powered travel planning platform.
+
+While the core functionality and user experience are in place, the project is still under active development and has significant room for improvement, including additional features, enhanced AI capabilities, better personalization, and integrations with real-world travel services.
+
+---
+
+## 👨‍💻 Author
+
+### KYRANAS RALLIS-PANAGIOTIS
+
+- GitHub: [@Panagiotis2929](https://github.com/Panagiotis2929)
+
+---
