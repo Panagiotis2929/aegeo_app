@@ -71,8 +71,9 @@ https://aegeo-app.vercel.app
 
 ```text
 src/
-├── aegeo.css
-│
+├── css/
+│   │ 
+│   └── aegeo.css
 ├── App.jsx
 └── main.jsx
 ```
@@ -86,7 +87,7 @@ While the core functionality and user experience are in place, the project is st
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 ### KYRANAS RALLIS-PANAGIOTIS
 
