@@ -71,8 +71,8 @@ https://aegeo-app.vercel.app
 
 ```text
 src/
-├── components/
-│   ├── common/
+├── aegeo.css
+│
 ├── App.jsx
 └── main.jsx
 ```
