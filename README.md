@@ -18,7 +18,7 @@ Whether you're looking for a relaxing island escape, an adventure-packed journey
 
 **Try the application here:**
 
-https://aegeo-app.vercel.app
+https://y-rpkyranas-7601s-projects.vercel.app/
 
 ---
 
